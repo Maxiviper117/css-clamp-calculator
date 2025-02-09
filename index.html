@@ -1,91 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CSS Clamp Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 2rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    input {
-      margin-bottom: 1rem;
-    }
-    .result {
-      font-weight: bold;
-      margin-top: 1rem;
-      padding: 0.5rem;
-      background: #f3f3f3;
-      white-space: pre-wrap;
-    }
-  </style>
-</head>
-<body>
-  <h1>CSS Clamp Calculator</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <title>CSS Clamp Calculator</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 2rem;
+                background: #f9f9f9;
+                color: #333;
+                display: flex;
+                justify-content: center;
+            }
+            .container {
+                max-width: 800px;
+                width: 100%;
+                background: #fff;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+                text-align: center;
+                color: #444;
+            }
+            .formula,
+            .result,
+            .clamp-group {
+                background: #f8f8f8;
+                padding: 1rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                margin-bottom: 1rem;
+            }
+            .result {
+                margin-top: 2rem;
+                white-space: pre-line;
+            }
+            label {
+                display: block;
+                font-weight: bold;
+                margin: 0.5rem 0;
+            }
+            input {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0.75rem;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+            button {
+                display: block;
+                width: 100%;
+                max-width: 200px;
+                padding: 0.5rem;
+                margin: 1rem auto;
+                border: none;
+                background: #007bff;
+                color: white;
+                font-size: 1rem;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #0056b3;
+            }
+            .clamp-group {
+                background: #f8f8f8;
+                padding: 1rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                margin-bottom: 1rem;
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+            }
+            .clamp-group label {
+                flex: 1;
+            }
+            .clamp-group button {
+                background: #dc3545;
+                max-width: 100px;
+                padding: 0.25rem;
+                flex-shrink: 0;
+                align-self: flex-start;
+            }
+            .clamp-group button:hover {
+                background: #b52a3a;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>CSS Clamp Calculator</h1>
 
-  <label>
-    Minimum Values (rem, comma separated):
-    <input type="text" id="minValues" value="1, 1.5" placeholder="e.g. 1, 1.5, 2">
-  </label>
+            <div class="formula">
+                <strong>Formula used:</strong><br />
+                Slope = (maxValue - minValue) / (maxRem - minRem)<br />
+                Intercept = minValue - (slope * minRem)<br />
+                Slope in % = slope * 100<br />
+                CSS Clamp:
+                <code
+                    >clamp(minValue rem, calc(slope% vw + intercept rem),
+                    maxValue rem)</code
+                >
+            </div>
 
-  <label>
-    Maximum Values (rem, comma separated):
-    <input type="text" id="maxValues" value="2, 2.5" placeholder="e.g. 2, 2.5, 3">
-  </label>
+            <div id="clampInputs"></div>
+            <button onclick="addClampGroup()">Add Clamp Range</button>
 
-  <label>
-    Minimum Viewport (px):
-    <input type="number" id="minViewport" value="320">
-  </label>
+            <label>
+                Minimum Viewport (px):
+                <input type="number" id="minViewport" value="320" />
+            </label>
 
-  <label>
-    Maximum Viewport (px):
-    <input type="number" id="maxViewport" value="1366">
-  </label>
+            <label>
+                Maximum Viewport (px):
+                <input type="number" id="maxViewport" value="1366" />
+            </label>
 
-  <label>
-    Divider (px) <small>(usually the root font-size, e.g., 16 or 10)</small>:
-    <input type="number" id="divider" value="16">
-  </label>
+            <label>
+                Divider (px)
+                <small>(usually the root font-size, e.g., 16 or 10)</small>:
+                <input type="number" id="divider" value="16" />
+            </label>
 
-  <button onclick="calculateClamp()">Calculate Clamp</button>
+            <button onclick="calculateClamp()">Calculate Clamp</button>
 
-  <div class="result" id="result"></div>
+            <div class="result" id="result"></div>
+        </div>
 
-  <script>
-    function generateClamp(minValue, maxValue, minViewport, maxViewport, divider) {
-      const minRem = minViewport / divider;
-      const maxRem = maxViewport / divider;
-      const slope = (maxValue - minValue) / (maxRem - minRem);
-      const intercept = minValue - slope * minRem;
-      const slopePercent = slope * 100;
-      return `clamp(${minValue}rem, calc(${slopePercent.toFixed(3)}vw + ${intercept.toFixed(3)}rem), ${maxValue}rem)`;
-    }
+        <script>
+            function addClampGroup() {
+                const container = document.getElementById("clampInputs");
+                const group = document.createElement("div");
+                group.classList.add("clamp-group");
+                group.innerHTML = `
+                    <label>Min Value (rem): <input type="number" class="minValue" step="0.1"></label>
+                    <label>Max Value (rem): <input type="number" class="maxValue" step="0.1"></label>
+                    <button type="button" onclick="this.parentNode.remove()">Remove</button>
+                `;
+                container.appendChild(group);
+            }
 
-    function calculateClamp() {
-      const minValues = document.getElementById('minValues').value.split(',').map(v => parseFloat(v.trim()));
-      const maxValues = document.getElementById('maxValues').value.split(',').map(v => parseFloat(v.trim()));
-      const minViewport = parseFloat(document.getElementById('minViewport').value);
-      const maxViewport = parseFloat(document.getElementById('maxViewport').value);
-      const divider = parseFloat(document.getElementById('divider').value);
+            function generateClamp(
+                minValue,
+                maxValue,
+                minViewport,
+                maxViewport,
+                divider
+            ) {
+                const minRem = minViewport / divider;
+                const maxRem = maxViewport / divider;
+                const slope = (maxValue - minValue) / (maxRem - minRem);
+                const intercept = minValue - slope * minRem;
+                const slopePercent = slope * 100;
+                return `clamp(${minValue}rem, calc(${slopePercent.toFixed(
+                    3
+                )}vw + ${intercept.toFixed(3)}rem), ${maxValue}rem)`;
+            }
 
-      if (minValues.length !== maxValues.length) {
-        document.getElementById('result').textContent = "Error: Number of min and max values must match.";
-        return;
-      }
+            function calculateClamp() {
+                const minViewport = parseFloat(
+                    document.getElementById("minViewport").value
+                );
+                const maxViewport = parseFloat(
+                    document.getElementById("maxViewport").value
+                );
+                const divider = parseFloat(
+                    document.getElementById("divider").value
+                );
+                const minInputs = document.querySelectorAll(".minValue");
+                const maxInputs = document.querySelectorAll(".maxValue");
 
-      let resultText = "";
-      for (let i = 0; i < minValues.length; i++) {
-        const clampValue = generateClamp(minValues[i], maxValues[i], minViewport, maxViewport, divider);
-        resultText += `Clamp ${i + 1}: ${clampValue}\n`;
-      }
-
-      document.getElementById('result').textContent = resultText;
-    }
-  </script>
-</body>
+                let resultText = "";
+                for (let i = 0; i < minInputs.length; i++) {
+                    const minValue = parseFloat(minInputs[i].value);
+                    const maxValue = parseFloat(maxInputs[i].value);
+                    if (!isNaN(minValue) && !isNaN(maxValue)) {
+                        const clampValue = generateClamp(
+                            minValue,
+                            maxValue,
+                            minViewport,
+                            maxViewport,
+                            divider
+                        );
+                        resultText += `Clamp ${i + 1}: ${clampValue}\n`;
+                    }
+                }
+                document.getElementById("result").textContent = resultText;
+            }
+        </script>
+    </body>
 </html>
