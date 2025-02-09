@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Clamp Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    input {
+      margin-bottom: 1rem;
+    }
+    .result {
+      font-weight: bold;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background: #f3f3f3;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>CSS Clamp Calculator</h1>
+
+  <label>
+    Minimum Values (rem, comma separated):
+    <input type="text" id="minValues" value="1, 1.5" placeholder="e.g. 1, 1.5, 2">
+  </label>
+
+  <label>
+    Maximum Values (rem, comma separated):
+    <input type="text" id="maxValues" value="2, 2.5" placeholder="e.g. 2, 2.5, 3">
+  </label>
+
+  <label>
+    Minimum Viewport (px):
+    <input type="number" id="minViewport" value="320">
+  </label>
+
+  <label>
+    Maximum Viewport (px):
+    <input type="number" id="maxViewport" value="1366">
+  </label>
+
+  <label>
+    Divider (px) <small>(usually the root font-size, e.g., 16 or 10)</small>:
+    <input type="number" id="divider" value="16">
+  </label>
+
+  <button onclick="calculateClamp()">Calculate Clamp</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function generateClamp(minValue, maxValue, minViewport, maxViewport, divider) {
+      const minRem = minViewport / divider;
+      const maxRem = maxViewport / divider;
+      const slope = (maxValue - minValue) / (maxRem - minRem);
+      const intercept = minValue - slope * minRem;
+      const slopePercent = slope * 100;
+      return `clamp(${minValue}rem, calc(${slopePercent.toFixed(3)}vw + ${intercept.toFixed(3)}rem), ${maxValue}rem)`;
+    }
+
+    function calculateClamp() {
+      const minValues = document.getElementById('minValues').value.split(',').map(v => parseFloat(v.trim()));
+      const maxValues = document.getElementById('maxValues').value.split(',').map(v => parseFloat(v.trim()));
+      const minViewport = parseFloat(document.getElementById('minViewport').value);
+      const maxViewport = parseFloat(document.getElementById('maxViewport').value);
+      const divider = parseFloat(document.getElementById('divider').value);
+
+      if (minValues.length !== maxValues.length) {
+        document.getElementById('result').textContent = "Error: Number of min and max values must match.";
+        return;
+      }
+
+      let resultText = "";
+      for (let i = 0; i < minValues.length; i++) {
+        const clampValue = generateClamp(minValues[i], maxValues[i], minViewport, maxViewport, divider);
+        resultText += `Clamp ${i + 1}: ${clampValue}\n`;
+      }
+
+      document.getElementById('result').textContent = resultText;
+    }
+  </script>
+</body>
+</html>
