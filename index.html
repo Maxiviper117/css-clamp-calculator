@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata"></script>
     <script src="script.js" defer></script>
 </head>
 <body>
@@ -22,8 +23,8 @@
 
             <label>
                 Number of Steps:
-                <input type="number" id="numSteps" value="5" min="5" />
-                <small>(minimum 5 steps for xs to lg)</small>
+                <input type="number" id="numSteps" value="5" min="5" max="14" />
+                <small>(minimum 5 steps, maximum 14 - up to 9xl)</small>
             </label>
 
             <label>
@@ -55,24 +56,7 @@
 
         <div class="graph-container">
             <h3>Size Scaling Curve</h3>
-            <div class="curve-controls">
-                <div class="curve-type">
-                    <label>
-                        Curve Type:
-                        <select id="curveType" onchange="updateChart()">
-                            <option value="linear">Linear</option>
-                            <option value="exponential">Exponential</option>
-                            <option value="logarithmic">Logarithmic</option>
-                        </select>
-                    </label>
-                </div>
-                <div class="curve-intensity">
-                    <label>
-                        Curve Intensity:
-                        <input type="range" id="curveIntensity" min="1" max="3" step="0.1" value="1" onchange="updateChart()">
-                    </label>
-                </div>
-            </div>
+            <p class="chart-instructions">Drag any point up or down to customize individual size values. Changes will automatically update the CSS variables below.</p>
             <canvas id="sizeChart"></canvas>
         </div>
 

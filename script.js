@@ -1,16 +1,20 @@
 let sizeChart;
+let currentSizes = [];
 
 function initChart() {
     const ctx = document.getElementById('sizeChart').getContext('2d');
     sizeChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['xs', 'sm', 'md', 'base', 'lg', 'xl', '2xl', '3xl'],
+            labels: ['xs', 'sm', 'md', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl', '8xl', '9xl'],
             datasets: [{
                 label: 'Size Scale',
                 data: [],
                 borderColor: '#007bff',
-                tension: 0.4
+                tension: 0.4,
+                pointBackgroundColor: '#007bff',
+                pointRadius: 6,
+                pointHoverRadius: 8
             }]
         },
         options: {
@@ -39,11 +43,29 @@ function initChart() {
                 legend: {
                     display: true,
                     position: 'top',
+                },
+                dragData: {
+                    dragY: true,
+                    dragX: false,
+                    onDragStart: function(e, element) {
+                        // Return true to allow dragging
+                        return true;
+                    },
+                    onDrag: function(e, datasetIndex, index, value) {
+                        // Ensure value stays positive
+                        if (value < 0) return 0;
+                        currentSizes[index] = value;
+                        generateTailwind();
+                    },
+                    onDragEnd: function(e, datasetIndex, index, value) {
+                        currentSizes[index] = value;
+                        generateTailwind();
+                    }
                 }
             },
             layout: {
                 padding: {
-                    bottom: 20  // Add padding at the bottom for x-axis labels
+                    bottom: 20
                 }
             }
         }
@@ -52,62 +74,85 @@ function initChart() {
 }
 
 function calculateStepSizes(baseSize, numSteps) {
-    const curveType = document.getElementById('curveType').value;
-    const intensity = parseFloat(document.getElementById('curveIntensity').value);
+    // If we already have custom sizes from user dragging, use those
+    if (currentSizes && currentSizes.length === numSteps) {
+        return [...currentSizes];
+    }
+    
+    // Otherwise calculate fresh values using predefined proportions
     const sizes = [];
-    const smallerSteps = 3; // xs, sm, md
-    const largerSteps = numSteps - 4; // excluding base
-
-    // Calculate smaller sizes
-    for (let i = smallerSteps; i > 0; i--) {
-        let step;
-        switch (curveType) {
-            case 'exponential':
-                step = baseSize - (Math.pow(i / smallerSteps, intensity) * (baseSize * 0.4));
-                break;
-            case 'logarithmic':
-                step = baseSize - (Math.log(i + 1) / Math.log(smallerSteps + 1) * (baseSize * 0.4));
-                break;
-            default: // linear
-                step = baseSize - ((i / smallerSteps) * (baseSize * 0.4));
-        }
-        sizes.push(step);
+    
+    // Define the standard size multipliers in typography scales
+    // These values are commonly used in design systems
+    const sizeMultipliers = {
+        "xs": 0.6,      // extra small: 60% of base
+        "sm": 0.75,     // small: 75% of base
+        "md": 0.875,    // medium: 87.5% of base
+        "base": 1,      // base: 100%
+        "lg": 1.125,    // large: 112.5% of base
+        "xl": 1.25,     // extra large: 125% of base
+        "2xl": 1.5,     // 2x large: 150% of base
+        "3xl": 1.875,   // 3x large: 187.5% of base
+        "4xl": 2.25,    // 4x large: 225% of base
+        "5xl": 3,       // 5x large: 300% of base
+        "6xl": 3.75,    // 6x large: 375% of base
+        "7xl": 4.5,     // 7x large: 450% of base
+        "8xl": 6,       // 8x large: 600% of base
+        "9xl": 8        // 9x large: 800% of base
+    };
+    
+    // Get all size keys and limit to the number of steps requested
+    const sizeKeys = Object.keys(sizeMultipliers).slice(0, numSteps);
+    
+    // Apply standard linear scale
+    for (let i = 0; i < sizeKeys.length; i++) {
+        const key = sizeKeys[i];
+        const baseMultiplier = sizeMultipliers[key];
+        const size = baseSize * baseMultiplier;
+        sizes.push(size);
     }
 
-    // Add base size
-    sizes.push(baseSize);
-
-    // Calculate larger sizes
-    for (let i = 1; i <= largerSteps; i++) {
-        let step;
-        switch (curveType) {
-            case 'exponential':
-                step = baseSize + (Math.pow(i / largerSteps, intensity) * (baseSize * 0.8));
-                break;
-            case 'logarithmic':
-                step = baseSize + (Math.log(i + 1) / Math.log(largerSteps + 1) * (baseSize * 0.8));
-                break;
-            default: // linear
-                step = baseSize + ((i / largerSteps) * (baseSize * 0.8));
-        }
-        sizes.push(step);
-    }
-
+    currentSizes = [...sizes];
     return sizes;
 }
 
 function updateChart() {
     const baseSize = parseFloat(document.getElementById('baseSize').value);
     const numSteps = Math.max(5, parseInt(document.getElementById('numSteps').value));
+    const stepSize = parseFloat(document.getElementById('stepSize').value);
+    
+    // Adapt to number of steps change while preserving manual adjustments
+    if (currentSizes.length !== numSteps) {
+        // We need to recalculate, but try to preserve any custom values
+        let newSizes = [];
+        const oldSizes = [...currentSizes];
+        
+        if (oldSizes.length > 0) {
+            // Keep existing points where possible
+            for (let i = 0; i < numSteps; i++) {
+                if (i < oldSizes.length) {
+                    newSizes.push(oldSizes[i]);
+                } else {
+                    // Add new points based on the step size
+                    newSizes.push(baseSize + (i - 3) * stepSize);
+                }
+            }
+            currentSizes = newSizes;
+        } else {
+            // First time or reset
+            currentSizes = [];
+        }
+    }
+    
     const sizes = calculateStepSizes(baseSize, numSteps);
     
-    // Update chart data
-    sizeChart.data.labels = ['xs', 'sm', 'md', 'base', 'lg', 'xl', '2xl', '3xl'].slice(0, numSteps);
+    // Use the same labels we use in the CSS output
+    const sizeLabels = ["xs", "sm", "md", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl"];
+    
+    // Update chart data with all labels
+    sizeChart.data.labels = sizeLabels.slice(0, numSteps);
     sizeChart.data.datasets[0].data = sizes;
     sizeChart.update();
-    
-    // Update step size based on curve
-    document.getElementById('stepSize').value = (sizes[sizes.length - 1] - sizes[0]) / (sizes.length - 1);
     
     // Generate the CSS variables
     generateTailwind();
@@ -143,38 +188,16 @@ function generateTailwind() {
     const baseSize = parseFloat(document.getElementById("baseSize").value);
     const numSteps = Math.max(5, parseInt(document.getElementById("numSteps").value));
 
-    // Calculate sizes based on the curve
-    const sizes = calculateStepSizes(baseSize, numSteps);
+    // Get sizes based on current values (either calculated or manually adjusted)
+    const sizes = currentSizes.length === numSteps ? [...currentSizes] : calculateStepSizes(baseSize, numSteps);
     let resultText = "<pre><code class='language-css'>:root {";
     
-    // Output smaller sizes in specific order (xs, sm, md)
-    const smallerLabels = ["xs", "sm", "md"];
-    for (let i = 0; i < smallerLabels.length; i++) {
-        const sizeLabel = smallerLabels[i];
-        const clampValue = generateClamp(
-            sizes[i],
-            sizes[i],
-            minViewport,
-            maxViewport,
-            divider
-        );
-        resultText += `\n\t--${prefix}-${sizeLabel}: ${clampValue};`;
-    }
-
-    // Add base size
-    const baseClamp = generateClamp(
-        sizes[3],
-        sizes[3],
-        minViewport,
-        maxViewport,
-        divider
-    );
-    resultText += `\n\t--${prefix}-base: ${baseClamp};`;
-
-    // Output larger sizes
-    const largerLabels = ["lg", "xl", "2xl", "3xl", "4xl", "5xl"];
-    for (let i = 4; i < sizes.length; i++) {
-        const sizeLabel = largerLabels[i - 4];
+    // Generate labels array for all possible sizes - match the full set we have available
+    const sizeLabels = ["xs", "sm", "md", "base", "lg", "xl", "2xl", "3xl", "4xl", "5xl", "6xl", "7xl", "8xl", "9xl"];
+    
+    // Output all sizes in correct order
+    for (let i = 0; i < sizes.length; i++) {
+        const sizeLabel = sizeLabels[i];
         const clampValue = generateClamp(
             sizes[i],
             sizes[i],
@@ -222,9 +245,12 @@ function copyToClipboard() {
 window.addEventListener('load', () => {
     initChart();
     
-    // Add event listeners for input changes
+    // Add event listeners for all input changes
     document.getElementById('baseSize').addEventListener('input', updateChart);
     document.getElementById('numSteps').addEventListener('input', updateChart);
-    document.getElementById('curveType').addEventListener('change', updateChart);
-    document.getElementById('curveIntensity').addEventListener('input', updateChart);
+    document.getElementById('stepSize').addEventListener('input', updateChart);
+    document.getElementById('minViewport').addEventListener('input', generateTailwind);
+    document.getElementById('maxViewport').addEventListener('input', generateTailwind);
+    document.getElementById('divider').addEventListener('input', generateTailwind);
+    document.getElementById('prefix').addEventListener('input', generateTailwind);
 });

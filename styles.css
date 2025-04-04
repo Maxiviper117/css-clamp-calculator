@@ -206,6 +206,13 @@ code {
     /* margin-bottom: 3rem; */
 }
 
+.chart-instructions {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 1rem;
+    font-style: italic;
+}
+
 .curve-controls {
     display: flex;
     gap: 1rem;
@@ -214,11 +221,11 @@ code {
 }
 
 .curve-type {
-    flex: 1;
+    width: 100%;
 }
 
 #sizeChart {
-    /* width: 50%; */
+    width: 100%;
     max-height: 500px;
     margin-bottom: 2rem;
     /* padding-bottom: 20px; */
