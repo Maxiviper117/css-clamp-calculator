@@ -1,67 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>CSS Clamp Calculator</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata"></script>
-    <script src="script.js" defer></script>
-</head>
-<body>
-    <div class="container">
-        <h1>CSS Clamp Calculator</h1>
-        <p>This tool generates CSS variables with clamp values for responsive design.</p>
+    <head>
+        <meta charset="UTF-8" />
+        <title>CSS Clamp Calculator</title>
+        <link rel="stylesheet" href="styles.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+        />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata"></script>
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>CSS Clamp Calculator</h1>
+            <p>
+                This tool generates CSS variables with clamp values for
+                responsive design.
+            </p>
 
-        <form onsubmit="event.preventDefault()">
-            <label>
-                Base Size (rem):
-                <input type="number" id="baseSize" value="1" />
-            </label>
+            <form onsubmit="event.preventDefault()">
+                <label>
+                    Base Size (rem):
+                    <input type="number" id="baseSize" value="1" />
+                </label>
 
-            <label>
-                Number of Steps:
-                <input type="number" id="numSteps" value="5" min="5" max="14" />
-                <small>(minimum 5 steps, maximum 14 - up to 9xl)</small>
-            </label>
+                <label>
+                    Number of Steps:
+                    <input
+                        type="number"
+                        id="numSteps"
+                        value="5"
+                        min="5"
+                        max="14"
+                    />
+                    <small>(minimum 5 steps, maximum 14 - up to 9xl)</small>
+                </label>
 
-            <label>
-                Step Size (rem):
-                <input type="number" id="stepSize" value="0.25" />
-            </label>
+                <label>
+                    Step Size (rem):
+                    <input type="number" id="stepSize" value="0.25" />
+                </label>
 
-            <label>
-                Minimum Viewport (px):
-                <input type="number" id="minViewport" value="320" />
-            </label>
+                <label>
+                    Minimum Viewport (px):
+                    <input type="number" id="minViewport" value="320" />
+                </label>
 
-            <label>
-                Maximum Viewport (px):
-                <input type="number" id="maxViewport" value="1366" />
-            </label>
+                <label>
+                    Maximum Viewport (px):
+                    <input type="number" id="maxViewport" value="1366" />
+                </label>
 
-            <label>
-                Divider (px)
-                <small>(usually the root font-size, e.g., 16 or 10)</small>:
-                <input type="number" id="divider" value="16" />
-            </label>
+                <label>
+                    Divider (px)
+                    <small>(usually the root font-size, e.g., 16 or 10)</small>:
+                    <input type="number" id="divider" value="16" />
+                </label>
 
-            <label>
-                Prefix:
-                <input type="text" id="prefix" value="text" />
-            </label>
-        </form>
-
-        <div class="graph-container">
-            <h3>Size Scaling Curve</h3>
-            <p class="chart-instructions">Drag any point up or down to customize individual size values. Changes will automatically update the CSS variables below.</p>
-            <canvas id="sizeChart"></canvas>
+                <label>
+                    Prefix:
+                    <input type="text" id="prefix" value="text" />
+                </label>
+            </form>
+            <div class="graph-container">
+                <h3>Size Scaling Curve</h3>
+                <p class="chart-instructions">
+                    Drag any point up or down to customize individual size
+                    values. Changes will automatically update the CSS variables
+                    below.
+                </p>
+                <canvas id="sizeChart"></canvas>
+            </div>
+            <button onclick="generateTailwind()">Generate CSS Variables</button>
+            <div class="result" id="result"></div>
         </div>
-
-        <button onclick="generateTailwind()">Generate CSS Variables</button>
-        <div class="result" id="result"></div>
-    </div>
-</body>
+    </body>
 </html>
