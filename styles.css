@@ -1,0 +1,225 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+    background: #f9f9f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 800px;
+    width: 100%;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Add grid container for inputs */
+.container form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    text-align: center;
+    color: #444;
+}
+
+.result {
+    margin-top: 2rem;
+    white-space: pre-line;
+    background: #f8f8f8;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    position: relative;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+button {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    padding: 0.5rem;
+    margin: 1rem auto;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+pre {
+    background-color: #0d1117;
+    color: #e6edf3;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin: 1em 0;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+    position: relative;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9em;
+    color: #e6edf3;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 0.3em 0.5em;
+    border-radius: 3px;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #8b949e;
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+    color: #ff7b72;
+    font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-boolean,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attr {
+    color: #d18616;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-symbol,
+.hljs-type,
+.hljs-built_in,
+.hljs-class,
+.hljs-title {
+    color: #a7f3d0;
+}
+
+.hljs-params,
+.hljs-function {
+    color: #6187e8;
+}
+
+.hljs-tag {
+    color: #78d964;
+}
+
+.hljs-attribute {
+    color: #e0a7c6;
+}
+
+.hljs-name,
+.hljs-section {
+    color: #ffb86c;
+    font-weight: bold;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+    color: #e6edf3;
+}
+
+.hljs-strong {
+    font-weight: bold;
+    color: #e6edf3;
+}
+
+.hljs-link {
+    text-decoration: underline;
+    color: #e6edf3;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 1em;
+    background: #0d1117;
+    color: #e6edf3;
+    border-radius: 6px;
+}
+
+.copy-button {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    padding: 0.25em 0.5em;
+    width: fit-content;
+    background-color: #1b2330;
+    color: white;
+    border: 1px solid white;
+    font-size: 0.8em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.copy-button:hover {
+    opacity: 1;
+}
+
+.copy-button:active {
+    background-color: #388E3C;
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* height: fit-content; */
+    /* margin-bottom: 3rem; */
+}
+
+.curve-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.curve-type {
+    flex: 1;
+}
+
+#sizeChart {
+    /* width: 50%; */
+    max-height: 500px;
+    margin-bottom: 2rem;
+    /* padding-bottom: 20px; */
+}
